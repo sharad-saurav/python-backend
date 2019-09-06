@@ -13,7 +13,7 @@ def rule_capitalization(fle, fleName, target):
 	rule=file_name[:file_name.find('.py')]
 	
 	config_file=configFile
-	target= 'C:/Users/105666/projects/pythonProject/angular-python-flask-demo/DataFiles_Rules_Report.xlsx'
+# 	target= 'C:/Users/105666/projects/pythonProject/angular-python-flask-demo/DataFiles_Rules_Report.xlsx'
 	fles = []
 	fles.append(fleName)
 	all_files= fles
