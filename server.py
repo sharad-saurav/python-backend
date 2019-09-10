@@ -48,6 +48,8 @@ app = Flask(__name__, static_url_path='')
 CORS(app)
 ALLOWED_EXTENSIONS = set([ 'xls', 'xlsx'])
 
+# On IBM Cloud Cloud Foundry, get the port number from the environment variable PORT
+# When running this app on the local machine, default the port to 8000
 port = int(os.getenv('PORT', 5002))
 
 @app.route('/')
@@ -64,18 +66,19 @@ def upload_file():
         flash('No file part')
         return redirect(request.url)
         uploaded_files = request.files.getlist("file")
-        print('uploaded_files-------------',uploaded_files)
         milliseconds = request.args.get("milliseconds")
+        print(milliseconds)
         for file in uploaded_files:
             if file.filename == '':
                 flash('No selected file')
                 return redirect(request.url)
             if file and allowed_file(file.filename):
+                
                 filename = secure_filename(file.filename)
                 link = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/DataFiles_Rules_Report.xlsx'
                 target, headers = urllib.request.urlretrieve(link)
                 print(target, headers)
-               
+                
                 newTar = target + ".xlsx"
                 os.rename(target, newTar)
                 
@@ -115,6 +118,7 @@ def upload_file():
         uploadFile.multi_part_upload("sharad-saurav-bucket", "DataFiles_Rules_Report" + milliseconds + ".xlsx", newTar)
         return  getJson.get_Json_data(newTar)
     else:
+        print('check---------------------------------------------------------------------------------------------------------------------------')
         return jsonify(result={"status": 400})
 
 if __name__ == '__main__':
