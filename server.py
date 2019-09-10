@@ -113,7 +113,6 @@ def upload_file():
             Start_time_less_than_end_time.start_time_less_than_end_time(file, filename, newTar)
             Time_in_HH_MM_SS_format.time_in_hh_mm_ss_format(file, filename, newTar)
             Summary.summary(file, filename, newTar)
-            test.var = True
     uploadFile.multi_part_upload("sharad-saurav-bucket", "DataFiles_Rules_Report" + milliseconds + ".xlsx", newTar)
     return  getJson.get_Json_data(newTar)
 
