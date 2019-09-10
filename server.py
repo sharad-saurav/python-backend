@@ -64,6 +64,7 @@ def upload_file():
         flash('No file part')
         return redirect(request.url)
         uploaded_files = request.files.getlist("file")
+        print('uploaded_files-------------',uploaded_files)
         milliseconds = request.args.get("milliseconds")
         for file in uploaded_files:
             if file.filename == '':
