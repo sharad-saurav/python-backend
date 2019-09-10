@@ -1,6 +1,5 @@
 from cloudant import Cloudant
 from flask import Flask, render_template, request, jsonify, flash, redirect, url_for
-import atexit
 import os
 import json
 from werkzeug.utils import secure_filename
@@ -42,7 +41,6 @@ import Start_time_less_than_end_time
 import Summary
 import Time_in_HH_MM_SS_format
 import uploadFile
-from globalVar import test
 import requests
 import urllib.request
 
@@ -50,36 +48,6 @@ app = Flask(__name__, static_url_path='')
 CORS(app)
 ALLOWED_EXTENSIONS = set([ 'xls', 'xlsx'])
 
-db_name = 'mydb'
-client = None
-db = None
-
-if 'VCAP_SERVICES' in os.environ:
-    vcap = json.loads(os.getenv('VCAP_SERVICES'))
-    print('Found VCAP_SERVICES')
-    if 'cloudantNoSQLDB' in vcap:
-        creds = vcap['cloudantNoSQLDB'][0]['credentials']
-        user = creds['username']
-        password = creds['password']
-        url = 'https://' + creds['host']
-        client = Cloudant(user, password, url=url, connect=True)
-        db = client.create_database(db_name, throw_on_exists=False)
-elif "CLOUDANT_URL" in os.environ:
-    client = Cloudant(os.environ['CLOUDANT_USERNAME'], os.environ['CLOUDANT_PASSWORD'], url=os.environ['CLOUDANT_URL'], connect=True)
-    db = client.create_database(db_name, throw_on_exists=False)
-elif os.path.isfile('vcap-local.json'):
-    with open('vcap-local.json') as f:
-        vcap = json.load(f)
-        print('Found local VCAP_SERVICES')
-        creds = vcap['services']['cloudantNoSQLDB'][0]['credentials']
-        user = creds['username']
-        password = creds['password']
-        url = 'https://' + creds['host']
-        client = Cloudant(user, password, url=url, connect=True)
-        db = client.create_database(db_name, throw_on_exists=False)
-
-# On IBM Cloud Cloud Foundry, get the port number from the environment variable PORT
-# When running this app on the local machine, default the port to 8000
 port = int(os.getenv('PORT', 5002))
 
 @app.route('/')
@@ -92,18 +60,16 @@ def allowed_file(filename):
 
 @app.route('/parse_table', methods=['POST'])
 def upload_file():
-    if test.var:
-        test.var = False
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
         uploaded_files = request.files.getlist("file")
+        milliseconds = request.args.get("milliseconds")
         for file in uploaded_files:
             if file.filename == '':
                 flash('No selected file')
                 return redirect(request.url)
             if file and allowed_file(file.filename):
-                
                 filename = secure_filename(file.filename)
                 link = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/DataFiles_Rules_Report.xlsx'
                 target, headers = urllib.request.urlretrieve(link)
@@ -145,7 +111,7 @@ def upload_file():
                 Time_in_HH_MM_SS_format.time_in_hh_mm_ss_format(file, filename, newTar)
                 Summary.summary(file, filename, newTar)
                 test.var = True
-        uploadFile.multi_part_upload("sharad-saurav-bucket", "DataFiles_Rules_Report.xlsx", newTar)
+        uploadFile.multi_part_upload("sharad-saurav-bucket", "DataFiles_Rules_Report" + milliseconds + ".xlsx", newTar)
         return  getJson.get_Json_data(newTar)
     else:
         return jsonify(result={"status": 400})
