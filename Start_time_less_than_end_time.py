@@ -50,11 +50,14 @@ def start_time_less_than_end_time(fle, fleName, target):
 		for index,row in df.iterrows():
 			start_time=row['START_TIME']
 			end_time=row['END_TIME']
-			if(type(start_time)!=float and type(end_time)!=float):
-				if(start_time[:start_time.find(':')]>start_time[:end_time.find(':')]):
-					entry=[index,file,column_name+' has start time greater than end time']
-					print('The row '+str(index)+' in the file '+file+' has start_time greater than end time')
-					data.append(entry)
+			
+			for column_name in columns_to_apply:
+				column_value=row[column_name]
+				if(type(start_time)!=float and type(end_time)!=float):
+					if(start_time[:start_time.find(':')]>start_time[:end_time.find(':')]):
+						entry=[index,file,column_name+' has start time greater than end time']
+						print('The row '+str(index)+' in the file '+file+' has start_time greater than end time')
+						data.append(entry)
 					
 	df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
 	with ExcelWriter(target,engine='openpyxl',mode='a') as writer:
