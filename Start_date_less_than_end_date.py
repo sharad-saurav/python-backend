@@ -51,23 +51,26 @@ def start_date_less_than_end_date(fle, fleName, target):
 			start_date=row['START_DATE']
 			end_date=row['END_DATE']
 			
-			if(type(start_date)!=float and type(end_date)!=float): 
-				yyyy,mm,dd=start_date.split('-')
-				yyyy=int(yyyy)
-				mm=int(mm)
-				dd=int(dd)
-				start_date=date(yyyy,mm,dd)
-				
-				yyyy,mm,dd=end_date.split('-')
-				yyyy=int(yyyy)
-				mm=int(mm)
-				dd=int(dd)
-				end_date=date(yyyy,mm,dd)
-				
-				if(start_date > end_date):
-					entry=[index,file,column_name+' has start date greater than end date']
-					print('The row '+str(index)+' in the file '+file+' has start date greater than end date')
-					data.append(entry)
+			for column_name in columns_to_apply:
+				column_value=row[column_name]
+			
+				if(type(start_date)!=float and type(end_date)!=float): 
+					yyyy,mm,dd=start_date.split('-')
+					yyyy=int(yyyy)
+					mm=int(mm)
+					dd=int(dd)
+					start_date=date(yyyy,mm,dd)
+					
+					yyyy,mm,dd=end_date.split('-')
+					yyyy=int(yyyy)
+					mm=int(mm)
+					dd=int(dd)
+					end_date=date(yyyy,mm,dd)
+					
+					if(start_date > end_date):
+						entry=[index,file,column_name+' has start date greater than end date']
+						print('The row '+str(index)+' in the file '+file+' has start date greater than end date')
+						data.append(entry)
 				
 	df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
 	with ExcelWriter(target,engine='openpyxl',mode='a') as writer:
