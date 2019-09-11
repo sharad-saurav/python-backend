@@ -45,7 +45,7 @@ def start_time_less_than_end_time(fle, fleName, target):
 
 	for file in files:
 		df = pd.read_excel(fle)
-		df.index = range(2,df.shape[0]+2)
+		df.index = range(2,df.shape[0]+2) 
 
 		for index,row in df.iterrows():
 			start_time=row['START_TIME']
