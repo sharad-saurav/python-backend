@@ -55,7 +55,7 @@ def start_date_less_than_end_date(fle, fleName, target):
 			
 			if(type(start_date)!=float and type(end_date)!=float): 					
 				if(start_date > end_date):
-					entry=[index,file,'START_DATE',' has start date greater than end date']
+					entry=[index,file,'START_DATE has start date greater than end date']
 					print('The row '+str(index)+' in the file '+file+' has start date greater than end date')
 					data.append(entry)
 				
