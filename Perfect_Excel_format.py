@@ -100,5 +100,5 @@ def perfect_excel_format(fle, fleName, target):
 	'''
 
 	df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
-	with ExcelWriter(target,engine='openpyxl') as writer:
+	with ExcelWriter(target,engine='openpyxl',mode='a') as writer:
 		df1.to_excel(writer,sheet_name=rule,index=False)

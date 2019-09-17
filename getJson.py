@@ -6,22 +6,31 @@ def get_Json_data(target):
     import urllib
 
     wb = xlrd.open_workbook(target)
-    sh = wb.sheet_by_index(6)
+    try:
+        sh = wb.sheet_by_index(31)
+    except:
+        print('------------------30------------------------')
+        sh = wb.sheet_by_index(30)
+    # print('sh-------------',sh)
+    print('sh.ncols-------------',sh.ncols)
     # List to hold dictionaries
     data_list = []
     # Iterate through each row in worksheet and fetch values into dict
-    for rownum in range(1, sh.nrows):
+
+    for colnum in range(1, sh.ncols):
+        # print('colnum---------', colnum)
+        # print(' sh.col_values(colnum)--------', sh.col_values(colnum))
         data = OrderedDict()
-        row_values = sh.row_values(rownum)
-        data['File_Name'] = row_values[0]
-        data['Total_Issues'] = row_values[1]
-        data['Perfect_Excel_Format'] = row_values[2]
-        data['Process_ID'] = row_values[3]
-        data['Special_CHar_In_Entity_Name'] = row_values[4]
-        data['Start_Date_Less_Than_End_Date'] = row_values[5]
-        data['Start_Date_Less_Than_End_Time'] = row_values[6]
-        data['Time_in_hh'] = row_values[7]
+        col_values = sh.col_values(colnum)
+        # print(col_values)
         
+        data['name'] = col_values[0]
+        data['academicEvents'] = col_values[1]
+        data['campusEvents'] = col_values[2]
+        data['contact'] = col_values[3]
+        data['location'] = col_values[4]
+        data['timing'] = col_values[5]
+        data['unstructured'] = col_values[6]
         data_list.append(data)
  
     j = json.dumps(data_list)

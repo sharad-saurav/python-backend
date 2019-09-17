@@ -52,10 +52,11 @@ def rule_unstructured(fle, fleName, target):
 					entry=[index,file,column_value+' is not a allowed intent in the Unstructured file']
 					data.append(entry)
 	
-	
-	print('target-----------',target)
 	df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
-	print('target-----------',df1)
-	with ExcelWriter(target, engine='openpyxl', mode='a') as writer:
-		print('target-----------',writer)
-		df1.to_excel(writer,sheet_name=rule,index=False)
+	print('ExcelFile(target).sheet_names[0]-----------',ExcelFile(target).sheet_names[0])
+	if(ExcelFile(target).sheet_names[0] == 'Sheet1'):
+		with ExcelWriter(target, engine='openpyxl', mode='w') as writer:
+			df1.to_excel(writer,sheet_name=rule,index=False)
+	else:
+		with ExcelWriter(target, engine='openpyxl', mode='a') as writer:
+			df1.to_excel(writer,sheet_name=rule,index=False)

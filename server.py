@@ -82,7 +82,6 @@ def upload_file():
             os.rename(target, newTar)
 
             Allowed_intents_in_Unstructured.rule_unstructured(file, filename, newTar)
-            Check_for_capitalization.rule_capitalization(file, filename, newTar)
             Check_for_duplicates.rule_duplicates(file, filename, newTar)
             Check_for_missing_Keyword.rule_missing_keyword(file, filename, newTar)
             Check_for_capitalization.rule_capitalization(file, filename, newTar)

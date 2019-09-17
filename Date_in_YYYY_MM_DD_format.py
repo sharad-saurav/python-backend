@@ -52,7 +52,7 @@ def date_format(fle, fleName, target):
 			end_date=row['END_DATE']
 			if(type(start_date)!=float):
 				if(not re.match(r"([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))",start_date)):
-					entry=[index,file,column_value+' is not in YYYY-MM-DD fprmat']
+					entry=[index,file,column_value+' is not in YYYY-MM-DD format']
 					print('The row '+str(index)+' in the file '+file+' does not have start date in YYYY-MM-DD format')
 					data.append(entry)
 			if(type(end_date)!=float):
