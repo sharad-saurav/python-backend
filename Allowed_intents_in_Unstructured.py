@@ -53,7 +53,6 @@ def rule_unstructured(fle, fleName, target):
 					data.append(entry)
 	
 	df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
-	print('ExcelFile(target).sheet_names[0]-----------',ExcelFile(target).sheet_names[0])
 	if(ExcelFile(target).sheet_names[0] == 'Sheet1'):
 		with ExcelWriter(target, engine='openpyxl', mode='w') as writer:
 			df1.to_excel(writer,sheet_name=rule,index=False)

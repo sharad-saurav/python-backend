@@ -48,6 +48,7 @@ def process_id(fle, fleName, target):
 		df.index = range(2,df.shape[0]+2)
 		
 		for index,row in df.iterrows():
+			# print('row------------------',row)
 			if(type(row['PROCESS_ID'])!=float and type(row['PROCESS_AGENT_ID'])==float):
 				entry=[index,file,' The PROCESS_AGENT_ID is blank']
 				print('In the file '+file+' , PROCESS_AGENT_ID is blank')
