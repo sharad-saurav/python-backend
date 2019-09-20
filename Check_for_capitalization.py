@@ -48,15 +48,10 @@ def rule_capitalization(fle, fleName, target):
 			for column_name in columns_to_apply:
 				column_value=row[column_name]
 				if(type(column_value)!=float):
-					words=re.findall(r"[a-zA-Z]+",column_value)
-					for string in words:
-						if(re.match(r"(^[A-Z])[a-z]*",string)):
-							continue
-						else:
-							entry=[index,file,'\''+column_value+'\' in '+column_name+' does not satisfy the Camel case format']
-							print('The row '+str(index)+' in the file '+file+' has does not match CamelCase '+column_name+' column')
-							data.append(entry)
-							break
+					if not column_value[0].isupper():
+						entry=[index,file,'\''+column_value+'\' in '+column_name+' does not start with capital letter']
+						data.append(entry)
+						break
 							
 	df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
 	with ExcelWriter(target,engine='openpyxl',mode='a') as writer:

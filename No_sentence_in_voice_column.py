@@ -27,10 +27,11 @@ def no_sentence_in_voice_column(fle, fleName, target):
 	to_check=''
 	for index,row in newdf.iterrows():
 		to_check=row['TO_CHECK']
+		print('to_check-----------------',to_check)
 	to_check=json.loads(to_check)
 	files_to_apply=to_check['files_to_apply']
 	strings_to_apply=to_check['strings_to_apply']
-
+	print('strings_to_apply---',strings_to_apply)
 	if(to_check['files_to_apply']=='ALL'):
 		files = all_files
 	else:
@@ -49,7 +50,7 @@ def no_sentence_in_voice_column(fle, fleName, target):
 			column_value=row['VOICE_ONLY']
 			if(type(column_value)!=float):
 				for string in strings_to_apply:
-					if(column_value.find(string)!=-1):
+					if(string in column_value):
 						#print(index)
 						entry=[index,file,'VOICE_ONLY column has '+string+' in its contents']
 						print('The row '+str(index)+' in the file '+file+' has the text\' '+string+' \'in the voice_only column')

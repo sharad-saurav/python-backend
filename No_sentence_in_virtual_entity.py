@@ -47,8 +47,9 @@ def no_sentence_in_virtual_entity(fle, fleName, target):
 	for file in files:
 		df = pd.read_excel(fle)
 		df.index = range(2,df.shape[0]+2)
-
+		print('df.index--------------',df.index)
 		string=file[:file.find('_')]
+		print('string------------------',string)
 		for index,row in df.iterrows():
 			column_value=row['ENTITY_NAME']
 			if(type(column_value)!=float):
