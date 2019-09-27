@@ -7,19 +7,15 @@ def get_Json_data(target):
     import urllib
 
     wb = xlrd.open_workbook(target)
-    print('wb-------------------',wb)
     try:
         sh = wb.sheet_by_index(31)
-        print('sh--',len(sh.ncols))
     except:
         sh = wb.sheet_by_index(30)
-        print('sh-------------',sh)
     data_list = []
 
     for colnum in range(1, sh.ncols):
         data = OrderedDict()
         col_values = sh.col_values(colnum)
-        print('col_values------------',col_values)
         data['name'] = col_values[0]
         data['academicEvents'] = col_values[1]
         data['campusEvents'] = col_values[2]

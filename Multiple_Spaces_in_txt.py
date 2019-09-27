@@ -39,6 +39,13 @@ def multiple_spaces_in_txt(fle, fleName, target):
 					files.append(file)
 
 	data=[]
+	regex = r"\s{2,}"
+
+	def check_multiple_space(string):   
+		if(re.search(regex,string)): 
+			return True
+		else:  
+			return False
 
 	for file in files:
 		df = pd.read_excel(fle)
@@ -47,8 +54,8 @@ def multiple_spaces_in_txt(fle, fleName, target):
 		for index,row in df.iterrows():
 			for column_name in columns_to_apply:
 				column_value=row[column_name]
-				if(type(column_value)!=float):
-					if(re.search(r"\s\{2,}", column_value, flags = re.I)):
+				if(pd.notnull(row[column_name])):
+					if(check_multiple_space(column_value)):
 						entry=[index,file,column_name+' has multiple spaces in its contents']
 						print('The row '+str(index)+' in the file '+file+' has multiple spaces in '+column_name+' column')
 						data.append(entry)

@@ -42,6 +42,13 @@ def no_timings_values_in_txt(fle, fleName, target):
 
 	data=[]
 
+	def find_time(string):
+		time = re.findall('([0-1]?\d|2[0-3]):([0-5]?\d):([0-5]?\d)', string) 
+		if(len(time)!= 0):
+			return True
+		else:
+			return False
+
 	for file in files:
 		df = pd.read_excel(fle)
 		df.index = range(2,df.shape[0]+2)
@@ -49,9 +56,9 @@ def no_timings_values_in_txt(fle, fleName, target):
 		for index, row in df.iterrows():
 			for column_name in columns_to_apply:
 				txt=row[column_name]
-				if(type(txt)!=float):
-					if(re.search(r"^(0[0-9]|1[0-9]|2[0-3]|[0-9]):[0-5][0-9]$", txt)):
-						entry=[index,file,column_name+' has timings information in its contents']
+				if(pd.notnull(row[column_name])):
+					if(find_time(txt)):
+						entry=[index,file,column_name + ' has timings information in its contents']
 						print('The row '+str(index)+' in the file '+file+' has timings in the '+column_name+' column')
 						data.append(entry)
 

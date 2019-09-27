@@ -47,7 +47,7 @@ def rule_unstructured(fle, fleName, target):
 			
 		for index, row in df.iterrows():
 			column_value=row['INTENT']
-			if(type(column_value)!=float):
+			if(pd.notnull(row['INTENT'])):
 				if(column_value not in intents):
 					entry=[index,file,column_value+' is not a allowed intent in the Unstructured file']
 					data.append(entry)

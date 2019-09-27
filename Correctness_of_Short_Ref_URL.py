@@ -8,6 +8,7 @@ def short_ref_url(fle, fleName, target):
 	import pandas as pd
 	from pandas import ExcelWriter
 	from pandas import ExcelFile
+	import validators
 
 	file_name="Correctness_of_Short_Ref_URL.py"
 	configFile = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/Configuration.xlsx'
@@ -39,11 +40,7 @@ def short_ref_url(fle, fleName, target):
 				if(file.startswith(f)):
 					files.append(file)
 
-	def validate_url(string):
-		url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', string) 
-		return url
-
-	data=[]
+	data=[] 
 		
 	for file in files:
 		df = pd.read_excel(fle)
@@ -52,8 +49,8 @@ def short_ref_url(fle, fleName, target):
 		for index, row in df.iterrows():
 			for column_name in columns_to_apply:
 				column_value=row[column_name]
-				if(type(column_value)!=float):
-					if(not validate_url(column_value)):
+				if(pd.notnull(row[column_name])):
+					if(validators.url(str(column_value))!=True):
 						entry=[index,file,column_name+' does not have a valid URL - '+column_value]
 						print('The row '+str(index)+' in the file '+file+' does not a valid url in '+column_name+' column')
 						data.append(entry)

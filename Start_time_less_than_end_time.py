@@ -10,7 +10,7 @@ def start_time_less_than_end_time(fle, fleName, target):
 	from pandas import ExcelFile
 	from dateutil.parser import parse
 	import validators
-	from datetime import date
+	import time
 
 	file_name="Start_time_less_than_end_time.py"
 	configFile = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/Configuration.xlsx'
@@ -41,20 +41,27 @@ def start_time_less_than_end_time(fle, fleName, target):
 				if(file.startswith(f)):
 					files.append(file)
 
+	def validate_time(time_text):
+		if(re.match("(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)",time_text)):
+			return True
+		else:
+			return False
+	
 	data=[]
 
 	for file in files:
 		df = pd.read_excel(fle)
 		df.index = range(2,df.shape[0]+2) 
-
 		for index,row in df.iterrows():
 			start_time=row['START_TIME']
 			end_time=row['END_TIME']
-			if(type(start_time)!=float and type(end_time)!=float):
-				if(start_time[:start_time.find(':')]>start_time[:end_time.find(':')]):
-					entry=[index,file,'START_TIME has start time greater than end time']
-					print('The row '+str(index)+' in the file '+file+' has start_time greater than end time')
-					data.append(entry)
+			if(pd.notnull(row['START_TIME']) and pd.notnull(row['END_TIME'])):
+				if(validate_time(start_time) and validate_time(end_time)):
+					print('startdate----------',start_time, end_time, start_time>end_time)
+					if(start_time>end_time):
+						entry=[index,file,'START_TIME has start time greater than end time']
+						print('The row '+str(index)+' in the file '+file+' has start_time greater than end time')
+						data.append(entry)
 					
 	df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
 	with ExcelWriter(target,engine='openpyxl',mode='a') as writer:

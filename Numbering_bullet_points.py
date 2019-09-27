@@ -22,6 +22,7 @@ def numbering_bullet_points(fle, fleName, target):
 	fles.append(fleName)
 	all_files= fles
 	files=[]
+	
 
 	config=pd.read_excel(config_file)
 	newdf=config[config['RULE']==rule]
@@ -41,7 +42,15 @@ def numbering_bullet_points(fle, fleName, target):
 					files.append(file)
 
 	data=[]
+	bullet_point = re.compile(r"\u2022")
 
+	def find_bullet_point(string):
+		result = re.search(bullet_point, string)
+		if(result != None):
+			return True
+		else:
+			return False
+		
 	for file in files:
 		df = pd.read_excel(fle)
 		df.index = range(2,df.shape[0]+2)
@@ -49,9 +58,8 @@ def numbering_bullet_points(fle, fleName, target):
 		for index, row in df.iterrows():
 			for column_name in columns_to_apply:
 				column_value=row[column_name]
-				if(type(column_value)!=float):
-					res = re.search(r"1\.[a-zA-Z' ']+2\.",column_value)
-					if(res):
+				if(pd.notnull(row[column_name])):
+					if(find_bullet_point(column_value)):
 						entry=[index,file,column_name+' contains bullet points/Numbering in its contents']
 						print('The row '+str(index)+' in the file '+file+' contains bullent points/Numbering in the'+column_name+' column')
 						data.append(entry)
@@ -59,3 +67,10 @@ def numbering_bullet_points(fle, fleName, target):
 	df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
 	with ExcelWriter(target,engine='openpyxl',mode='a') as writer:
 		df1.to_excel(writer,sheet_name=rule,index=False)
+
+
+		         
+    	
+			
+        
+			

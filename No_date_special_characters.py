@@ -40,8 +40,14 @@ def No_date_special_characters(fle, fleName, target):
 					files.append(file) 
 
 	data=[]
-
 	regex = re.compile('[@!#$%^&*()<>?/\|}{~:]')
+
+	def search_url(string): 
+		url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', string) 
+		if(len(url)!= 0):
+			return True
+		else:
+			return False
 
 	def has_date(string,fuzzy=False):
 		try: 
@@ -49,10 +55,6 @@ def No_date_special_characters(fle, fleName, target):
 			return True
 		except ValueError:
 			return False
-
-	def has_url(string):
-		url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', string) 
-		return url
 		
 	data=[]
 
@@ -63,17 +65,16 @@ def No_date_special_characters(fle, fleName, target):
 		for index, row in df.iterrows():
 			for column_name in columns_to_apply:
 				column_value=row[column_name]
-				if(type(column_value)!=float):
+				if(pd.notnull(row[column_name])):
 					if(has_date(column_value)):
-						#print(index)
 						entry=[index,file,column_name+' has date']
 						print('The row '+str(index)+' in the file '+file+' has date in the '+column_name+' column')
 						data.append(entry)
-					if(regex.search(column_value) != None):
+					if(regex.search(column_value)!=None):
 						entry=[index,file,column_name+' has special characters']
 						print('The row '+str(index)+' in the file '+file+' has special characters in the '+column_name+' column')
 						data.append(entry)
-					if(has_url(column_value)):
+					if(search_url(column_value)):
 						#print(index)
 						entry=[index,file,column_name+' has url in its contents']
 						print('The row '+str(index)+' in the file '+file+' has url in the '+column_name+' column')

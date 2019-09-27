@@ -48,8 +48,8 @@ def no_timing_for_acad_events(fle, fleName, target):
 		for index,row in df.iterrows():
 			for column_name in columns_to_apply:
 				column_value=row[column_name]
-				if(type(column_value)!=float):
-					entry=[index,file,'TIME columns have timing information']
+				if(pd.notnull(row[column_name])):
+					entry=[index,file, column_name+' columns have timing information']
 					print('The row '+str(index)+' in the file '+file+' has timing information')
 					data.append(entry)
 

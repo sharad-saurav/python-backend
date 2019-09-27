@@ -42,7 +42,10 @@ def no_ref_url_in_text(fle, fleName, target):
 
 	def find_url(string):
 		url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', string) 
-		return url
+		if(len(url)!= 0):
+			return True
+		else:
+			return False
 
 	data=[]
 
@@ -54,11 +57,11 @@ def no_ref_url_in_text(fle, fleName, target):
 		for index,row in df.iterrows():
 			text=row['TEXT']
 			#print(text)
-			if(type(text)!=float):
+			if(pd.notnull(row['TEXT'])):
 				#print('t:'+text)
 				if(find_url(text)):
 					#print(index)
-					entry=[index,file,column_name+' has Reference URL in its contents']
+					entry=[index,file,'TEXT has Reference URL in its contents']
 					print('The row '+str(index)+' in the file '+file+' has url in the text column')
 					data.append(entry)
 					

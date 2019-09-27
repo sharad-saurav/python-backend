@@ -51,7 +51,7 @@ def perfect_excel_format(fle, fleName, target):
 		#print("Column headings:")
 		res = re.search(r"[a-zA-z]+",file)
 		cols[res.group(0)+'_cols']=df.columns
-		#print(cols[res.group(0)+'_cols'])
+		print(cols[res.group(0)+'_cols'])
 		
 		columns=df.columns
 		for col in columns:
@@ -78,9 +78,11 @@ def perfect_excel_format(fle, fleName, target):
 				
 	#Rule - Check if the columns satisfies the data structure of all the data files
 	for key,value in cols.items():
-		cols_value=columns_to_match[key]
 		print('value',value)
-		print('cols_value',cols_value)
+		print('key-----------',key)
+		print('columns_to_match',columns_to_match)
+		print('columns_to_match',columns_to_match[key])
+		cols_value=columns_to_match[key]
 		if(sorted(cols_value)!=sorted(value.to_list())):
 			entry=[index,file,key+' does not match the structure of the data file']
 			print('The columns of the '+key+' does not match the structure of the data file')

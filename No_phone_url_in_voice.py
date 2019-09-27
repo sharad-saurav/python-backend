@@ -40,13 +40,19 @@ def no_phone_url_in_voice(fle, fleName, target):
 				if(file.startswith(f)):
 					files.append(file)
 
-	def find_email(string):
-		url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', string) 
-		return url
+	def search_email(string): 
+		email = re.findall(r'[\w\.-]+@[\w\.-]+', string) 
+		if(len(email)!= 0):
+			return True
+		else:
+			return False
 		
 	def find_phone(string):
-		phone = re.findall('^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$', string)
-		return phone
+		phone = re.findall('\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|\(\d{3}\)\s*\d{3}[-\.\s]??\d{4}|\d{3}[-\.\s]??\d{4}', string)
+		if(len(phone)!= 0):
+			return True
+		else:
+			return False
 
 	data=[]
 
@@ -58,11 +64,9 @@ def no_phone_url_in_voice(fle, fleName, target):
 			for column_name in columns_to_apply:
 				column_value=row[column_name]
 				#print(voice)
-				if(type(column_value)!=float):
-					#print('t:'+voice)
-					if(find_email(column_value)):
-						#print(index)
-						entry=[index,file,column_name+' has URL in its contents']
+				if(pd.notnull(row[column_name])):
+					if(search_email(column_value)):
+						entry=[index,file,column_name+' has EMAIL in its contents']
 						print('The row '+str(index)+' in the file '+file+' has url in the '+column_name+' column')
 						data.append(entry)
 					if(find_phone(column_value)):

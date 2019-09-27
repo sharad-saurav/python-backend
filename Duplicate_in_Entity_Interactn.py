@@ -9,7 +9,7 @@ def duplicate_entity_interaction(fle, fleName, target):
 	from pandas import ExcelWriter
 	from pandas import ExcelFile
 
-	file_name="Date_in_YYYY-MM-DD_format.py"
+	file_name="Duplicate_in_Entity_Interactn.py"
 	configFile = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/Configuration.xlsx'
 	rule=file_name[:file_name.find('.py')]
 	# file_directory= 'C:/uploads'

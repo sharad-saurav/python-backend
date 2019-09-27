@@ -12,7 +12,7 @@ def start_date_less_than_end_date(fle, fleName, target):
 	import validators
 	from datetime import date
 	from datetime import time
-	from datetime import datetime
+	import datetime
 
 	file_name="Start_date_less_than_end_date.py"
 	configFile ='https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/Configuration.xlsx'
@@ -45,6 +45,13 @@ def start_date_less_than_end_date(fle, fleName, target):
 
 	data=[]
 
+	def validate_date(date_text):
+		try:
+			datetime.datetime.strptime(date_text, '%Y-%m-%d')
+			return True
+		except:
+			return False
+
 	for file in files:
 		df = pd.read_excel(fle)
 		df.index = range(2,df.shape[0]+2)
@@ -53,11 +60,13 @@ def start_date_less_than_end_date(fle, fleName, target):
 			start_date=row['START_DATE']
 			end_date=row['END_DATE']
 			
-			if(type(start_date)!=float and type(end_date)!=float): 					
-				if(start_date > end_date):
-					entry=[index,file,'START_DATE has start date greater than end date']
-					print('The row '+str(index)+' in the file '+file+' has start date greater than end date')
-					data.append(entry)
+			if(pd.notnull(row['START_DATE']) and pd.notnull(row['END_DATE'])): 
+				if(validate_date(start_date) and validate_date(end_date)):		
+					print('startdate----------',start_date, end_date,start_date > end_date)			
+					if(start_date > end_date):
+						entry=[index,file,'START_DATE has start date greater than end date']
+						print('The row '+str(index)+' in the file '+file+' has start date greater than end date')
+						data.append(entry)
 				
 	df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
 	with ExcelWriter(target,engine='openpyxl',mode='a') as writer:

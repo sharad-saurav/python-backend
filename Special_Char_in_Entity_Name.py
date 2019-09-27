@@ -51,7 +51,7 @@ def special_char_in_entity_name(fle, fleName, target):
 		for index,row in df.iterrows():
 			for column_name in columns_to_apply:
 				column_value=row[column_name]
-				if(type(column_value)!=float):
+				if(pd.notnull(row[column_name])):
 					if(regex.search(column_value)!=None):
 						entry=[index,file,column_name+' has special characters']
 						print('The '+str(index)+' in the file '+file+' has special characters in '+column_name)

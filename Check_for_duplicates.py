@@ -43,8 +43,10 @@ def rule_duplicates(fle, fleName, target):
 		df.index = range(2,df.shape[0]+2)
 
 		duplicatedRowsDF = df[df.duplicated()]
+		print('duplicatedRowsDF-------------',duplicatedRowsDF)
 		if(not duplicatedRowsDF.empty):
 			for index,row in duplicatedRowsDF.iterrows():
+				print('index')
 				entry=[index,file,'This is a duplicated row']
 				data.append(entry)
 			print('The duplicate rows in the file '+ file +' are:')

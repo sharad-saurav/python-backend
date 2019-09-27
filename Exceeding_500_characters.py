@@ -47,7 +47,7 @@ def exceeding_500_characters(fle, fleName, target):
 		for index, row in df.iterrows():
 			for column_name in columns_to_apply:
 				column_value=row[column_name]
-				if(type(column_value)!=float):
+				if(pd.notnull(row[column_name])):
 					if(len(column_value)>=500):
 						#print(index)
 						entry=[index,file,column_name+' has more than 500 characters']

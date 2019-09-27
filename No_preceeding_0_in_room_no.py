@@ -49,7 +49,7 @@ def no_preceeding_0_in_room_no(fle, fleName, target):
 		for index,row in df.iterrows():
 			for column_name in columns_to_apply:
 				column_value=row[column_name]
-				if(type(column_value)!=float):
+				if(pd.notnull(row[column_name])):
 					if(any([s.startswith('0') for s in column_value.split() if s.isdigit()])):
 						entry=[index,file,column_name+' has leading zeors in the room number']
 						print('The row '+str(index)+' in the file '+file+' has leading zeros of room numbers in the '+column_name+' column')

@@ -47,7 +47,7 @@ def rule_capitalization(fle, fleName, target):
 		for index,row in df.iterrows():
 			for column_name in columns_to_apply:
 				column_value=row[column_name]
-				if(type(column_value)!=float):
+				if(pd.notnull(row[column_name])):
 					if not column_value[0].isupper():
 						entry=[index,file,'\''+column_value+'\' in '+column_name+' does not start with capital letter']
 						data.append(entry)

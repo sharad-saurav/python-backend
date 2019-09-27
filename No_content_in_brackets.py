@@ -45,7 +45,13 @@ def no_content_in_brackets(fle, fleName, target):
 				if(file.startswith(f)):
 					files.append(file)
 
-	regex = re.compile('[@!#$%^&*()<>?/\|}{~]')
+	regex = r'\[(.+)\]|\((.+)\)|\{(.+)\}'
+
+	def check_content_in_bracket(string):   
+		if(re.search(regex,string)): 
+			return True
+		else:  
+			return False
 
 	data=[]
 		
@@ -56,8 +62,8 @@ def no_content_in_brackets(fle, fleName, target):
 		for index, row in df.iterrows():
 			for column_name in columns_to_apply:
 				column_value=row[column_name]
-				if(type(column_value)!=float):
-					if():
+				if(pd.notnull(row[column_name])):
+					if(check_content_in_bracket(column_value)):
 						#print(index)
 						entry=[index,file,column_name+' has contents inside the brackets']
 						print('The row ' + str(index) + ' in the file ' + file + ' has content inside brackets in the '+ column_name +' column')

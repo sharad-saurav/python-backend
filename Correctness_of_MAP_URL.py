@@ -50,7 +50,7 @@ def rule_map_url(fle, fleName, target):
 		for index, row in df.iterrows():
 			for column_name in columns_to_apply:
 				column_value=row[column_name]
-				if(type(column_value)!=float):
+				if(pd.notnull(row[column_name])):
 					if(validators.url(str(column_value))!=True):
 						entry=[index,file,column_value+' is not have a valid MAP_URL']
 						print('The row '+str(index)+' in the file '+file+' does not a valid Map url in '+column_name+' column')

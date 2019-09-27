@@ -10,6 +10,7 @@ def email_id_validity(fle, fleName, target):
 	from pandas import ExcelFile
 
 	file_name="Email_id_validity.py"
+	regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
 	configFile = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/Configuration.xlsx'
 	rule=file_name[:file_name.find('.py')]
 	# file_directory= 'C:/uploads'
@@ -40,20 +41,31 @@ def email_id_validity(fle, fleName, target):
 
 	data=[]
 
-	def validate_email(string):
-		url = re.findall('([a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', string) 
-		return url
+# def validate_email(string):
+# 	pattern = '/\S+@\S+\.\S+/'1
+# 	result = re.match(pattern, string)
+# 	print('result------------',result)
+# 	return result
+
+	
+      
+# Define a function for 
+# for validating an Email 
+	def validate_email(email):   
+		if(re.search(regex,email)): 
+			return True
+		else:  
+			return False
 		
 	for file in files:
 		df = pd.read_excel(fle)
 		df.index = range(2,df.shape[0]+2)
-
 		for index,row in df.iterrows():
 			for column_name in columns_to_apply:
 				email=row['EMAIL']
-				if(type(email)!=float):
+				if(pd.notnull(row['EMAIL'])):
 					if(not validate_email(email)):
-						entry=[index,file,column_name+' does not have a valid email id']
+						entry=[index,file,column_name+'column ' + email + ' is not a valid email id']
 						print('The row '+str(index)+' in the file '+file+' does not have a proper email id')
 						data.append(entry)
 

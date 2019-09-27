@@ -46,24 +46,19 @@ def rule_date_time_blank(fle, fleName, target):
 		df.index = range(2,df.shape[0]+2)
 
 		for index,row in df.iterrows():
-			start_date=row['START_DATE']
-			end_date=row['END_DATE']
-			start_time=row['START_TIME']
-			end_time=row['END_TIME']
-			
-			if(type(start_date)==float):
+			if(pd.isnull(row['START_DATE'])):
 				entry=[index,file,' This row does not have start date']
 				print('The row '+str(index)+' in the file '+file+' does not have start_date')
 				data.append(entry)
-			if(type(end_date)==float):
+			if(pd.isnull(row['END_DATE'])):
 				entry=[index,file,' This row does not have end date']
 				print('The row '+str(index)+' in the file '+file+' does not have end date')
 				data.append(entry)
-			if(type(start_time)==float):
+			if(pd.isnull(row['START_TIME'])):
 				entry=[index,file,' This row does not have start time']
 				print('The row '+str(index)+' in the file '+file+' does not have start time')
 				data.append(entry)
-			if(type(end_time)==float):
+			if(pd.isnull(row['END_TIME'])):
 				entry=[index,file,' This row does not have end time']
 				print('The row '+str(index)+' in the file '+file+' does not have end time')
 				data.append(entry)

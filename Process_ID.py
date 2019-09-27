@@ -40,31 +40,37 @@ def process_id(fle, fleName, target):
 				if(file.startswith(f)):
 					files.append(file)
 
-	regex = re.compile('[@!#$%^&*()<>?/\|}{~:]')
 	data=[]
 
+	def validate_process_id(string):
+		if(re.match("^[a-zA-Z0-9-_]+$",string)):
+			return False
+		else:
+			return True
+
+	def validate_process_agent_id(string):
+		if(re.match("^[-+]?[0-9]+$",string)):
+			return False
+		else:
+			return True
+	
 	for file in files:
 		df = pd.read_excel(fle)
 		df.index = range(2,df.shape[0]+2)
-		
+
 		for index,row in df.iterrows():
-			# print('row------------------',row)
-			if(type(row['PROCESS_ID'])!=float and type(row['PROCESS_AGENT_ID'])==float):
-				entry=[index,file,' The PROCESS_AGENT_ID is blank']
-				print('In the file '+file+' , PROCESS_AGENT_ID is blank')
-				data.append(entry)
-			for column_name in columns_to_apply:
-				column_value=row[column_name]
-				if(type(column_value)!=float):
-					#print(index)
-					if(not column_value.isalnum()):
-						entry=[index,file,column_name+' is blank']
-						print('In the file '+file+' , the column '+column_name+' is blank')
-						data.append(entry)
-					if(regex.search(column_value)!=None):
-						entry=[index,file,column_name+' has special characters']
-						print('The '+str(index)+' in the file '+file+' has special characters in '+column_name)
-						data.append(entry)
+			process_id=row['PROCESS_ID']
+			process_agent_id=row['PROCESS_AGENT_ID']
+			
+			if(pd.notnull(row['PROCESS_ID'])): 
+				if(validate_process_id(process_id)):		
+					entry=[index,file,'PROCESS_ID has space or any character other than aphanumeric']
+					data.append(entry)
+			
+			if(pd.notnull(row['PROCESS_AGENT_ID'])): 
+				if(validate_process_agent_id(str(process_agent_id))):		
+					entry=[index,file,'PROCESS_AGENT_ID has any character other than numeric']
+					data.append(entry)
 
 	df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
 	with ExcelWriter(target,engine='openpyxl',mode='a') as writer:

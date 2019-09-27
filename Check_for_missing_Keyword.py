@@ -8,6 +8,8 @@ def rule_missing_keyword(fle, fleName, target):
 	import pandas as pd
 	from pandas import ExcelWriter
 	from pandas import ExcelFile
+	import numpy as np
+	import math
 
 	file_name="Check_for_missing_Keyword.py"
 	configFile = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/Configuration.xlsx'
@@ -44,15 +46,11 @@ def rule_missing_keyword(fle, fleName, target):
 	for file in files:
 		df = pd.read_excel(fle)
 		df.index = range(2,df.shape[0]+2)
-
-		newdf=df[df.duplicated(columns_to_apply)]
-		for index,row in newdf.iterrows():
-			entity_name=newdf['ENTITY_NAME']
-			secondary_entity_name=newdf['SECONDARY_ENTITY_NAME']
-			keyword=newdf['KEYWORD']
-			if(type(entity_name)!=float and type(secondary_entity_name)!=float):
-				if(type(keyword)==float):
-					entry=[index,file,'The '+entity_name+' + '+secondary_entity_name+' is an entity interaction of (Primary Entity + Secondary Entity) without Keyword']
+		print('df.index------------',df.index)
+		for index, row in df.iterrows():
+			if(pd.notnull(row['ENTITY_NAME']) & pd.notnull(row['SECONDARY_ENTITY_NAME'])):
+				if(pd.isnull(row['KEYWORD'])):
+					entry=[index,file,'The '+ row['ENTITY_NAME'] + row['SECONDARY_ENTITY_NAME'] +' is an entity interaction of (Primary Entity + Secondary Entity) without Keyword']
 					print('The row '+str(index)+'in the file '+file+' has an interaction of Primary Entity + Secondary Entity without Keyword')
 					data.append(entry)
 					

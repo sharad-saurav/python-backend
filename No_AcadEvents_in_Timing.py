@@ -48,9 +48,9 @@ def no_acadEvents_in_timing(fle, fleName, target):
 
 		for index, row in df.iterrows():
 			column_value=row['ENTITY_TYPE']
-			if(type(column_value)!=float):
+			if(pd.notnull(row['ENTITY_TYPE'])):
 				if(column_value=='AcadEvents'):
-					entry=[index,file,column_name+' has entity of type AcadEvents which is not allowed entity type in timing file']
+					entry=[index,file,'ENTITY_TYPE has entity of type AcadEvents which is not allowed entity type in timing file']
 					print('The row '+str(index)+' in the file '+file+' is of type AcadEvents which is not allowed')
 					data.append(entry)
 

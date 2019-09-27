@@ -39,11 +39,14 @@ import Process_ID
 import Special_Char_in_Entity_Name
 import Start_date_less_than_end_date
 import Start_time_less_than_end_time
+import Check_if_date_time_are_blank
 import Summary
 import Time_in_HH_MM_SS_format
 import uploadFile
 import requests
 import urllib.request
+import traceback
+import Check_Columns
 
 app = Flask(__name__, static_url_path='')
 CORS(app)
@@ -82,11 +85,12 @@ def upload_file():
 
                 newTar = target + ".xlsx"
                 os.rename(target, newTar)
-
+                Check_Columns.checkColumn(file, filename) 
                 Allowed_intents_in_Unstructured.rule_unstructured(file, filename, newTar)
-                Check_for_duplicates.rule_duplicates(file, filename, newTar)
-                Check_for_missing_Keyword.rule_missing_keyword(file, filename, newTar)
-                Check_for_capitalization.rule_capitalization(file, filename, newTar)
+                Check_for_duplicates.rule_duplicates(file, filename, newTar)  
+                Check_for_missing_Keyword.rule_missing_keyword(file, filename, newTar) 
+                Check_for_capitalization.rule_capitalization(file, filename, newTar) 
+                Check_if_date_time_are_blank.rule_date_time_blank(file, filename, newTar) 
                 Correctness_of_MAP_URL.rule_map_url(file, filename, newTar)
                 Correctness_of_Short_Ref_URL.short_ref_url(file, filename, newTar)
                 Date_in_YYYY_MM_DD_format.date_format(file, filename, newTar)
@@ -108,7 +112,7 @@ def upload_file():
                 No_timing_for_acad_events.no_timing_for_acad_events(file, filename, newTar)
                 No_timings_values_in_txt.no_timings_values_in_txt(file, filename, newTar)
                 Numbering_bullet_points.numbering_bullet_points(file, filename, newTar)
-                Perfect_Excel_format.perfect_excel_format(file, filename, newTar)
+                # Perfect_Excel_format.perfect_excel_format(file, filename, newTar)
                 Process_ID.process_id(file, filename, newTar)
                 Special_Char_in_Entity_Name.special_char_in_entity_name(file, filename, newTar)
                 Start_date_less_than_end_date.start_date_less_than_end_date(file, filename, newTar)
@@ -118,6 +122,7 @@ def upload_file():
         uploadFile.multi_part_upload("sharad-saurav-bucket", "DataFiles_Rules_Report" + milliseconds + ".xlsx", newTar)
         return  getJson.get_Json_data(newTar)
     except Exception as e:
+        traceback.print_exc()
         return str(e)
 
 if __name__ == '__main__':

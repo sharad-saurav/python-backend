@@ -13,7 +13,7 @@ def time_in_hh_mm_ss_format(fle, fleName, target):
 	from pandas import ExcelFile
 	from dateutil.parser import parse
 	import validators
-	from datetime import date
+	import time
 
 	file_name="Time_in_HH-MM-SS_format.py"
 	configFile = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/Configuration.xlsx'
@@ -47,6 +47,12 @@ def time_in_hh_mm_ss_format(fle, fleName, target):
 
 	data=[]
 
+	def validate_time(time_text):
+		if(re.match("(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)",time_text)):
+			return False
+		else:
+			return True
+
 	for file in files:
 		df = pd.read_excel(fle)
 		df.index = range(2,df.shape[0]+2)
@@ -54,13 +60,13 @@ def time_in_hh_mm_ss_format(fle, fleName, target):
 		for index,row in df.iterrows():
 			start_time=row['START_TIME']
 			end_time=row['END_TIME']
-			if(type(start_time)!=float and type(end_time)!=float):
-				if (not re.match(r"(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)",start_time)):
-					entry=[index,file,column_name+' does not have time in HH:MM:SS format']
+			if(pd.notnull(row['START_TIME']) and pd.notnull(row['END_TIME'])):
+				if (validate_time(start_time)):
+					entry=[index,file,'column START_TIME ' + start_time + ' does not have time in HH:MM:SS format']
 					print('The row '+str(index)+' in the file '+file+' does not have start time in HH:MM:SS format')
 					data.append(entry)
-				if (not re.match(r"(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)",end_time)):
-					entry=[index,file,column_name+' does not have time in HH:MM:SS format']
+				if (validate_time(end_time)):
+					entry=[index,file,'column END_TIME '+ end_time+' does not have time in HH:MM:SS format']
 					print('The row '+str(index)+' in the file '+file+' does not have end time in HH:MM:SS format')
 					data.append(entry)
 					
