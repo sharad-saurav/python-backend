@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "server.py", line 1, in <module>
+    from cloudant import Cloudant
+ImportError: No module named cloudant
+ * Serving Flask app "server" (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+ * Running on http://127.0.0.1:5002/ (Press CTRL+C to quit)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 296-875-659
+ * Detected change in '/usr/lib/python3.5/hmac.py', reloading
