@@ -149,9 +149,9 @@ def checkColumn(fle, fleName):
     elif(fleName == 'Timing.xlsx'):
         columnNames = [
         "SUBJECT_AREA",
-        "SAMPLE_QUESTIONS",
+       # "SAMPLE_QUESTIONS",
         "ENTITY_TYPE",
-        "COPIED_FROM",
+       # "COPIED_FROM",
         "ENTITY_NAME",
         "SECONDARY_ENTITY_NAME",
         "KEYWORD",

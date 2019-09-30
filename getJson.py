@@ -14,7 +14,7 @@ def get_Json_data(target):
     data_list = []
 
     for colnum in range(1, sh.ncols):
-        data = OrderedDict()
+        data = dict()
         col_values = sh.col_values(colnum)
         data['name'] = col_values[0]
         data['academicEvents'] = col_values[1]
