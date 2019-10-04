@@ -15,7 +15,7 @@ def time_in_hh_mm_ss_format(fle, fleName, target):
 	import validators
 	import time
 
-	file_name="Time_in_HH-MM-SS_format.py"
+	file_name="Time_in_HH_MM_SS_format.py"
 	configFile = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/Configuration.xlsx'
 	rule=file_name[:file_name.find('.py')]
 	# file_directory= 'C:/uploads'
