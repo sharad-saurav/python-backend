@@ -15,7 +15,7 @@ def date_format(fle, fleName, target):
 
 
 
-	file_name="Date_in_YYYY-MM-DD_format.py"
+	file_name="Date_in_YYYY_MM_DD_format.py"
 	configFile = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/Configuration.xlsx'
 	rule=file_name[:file_name.find('.py')]
 	# file_directory= 'C:/uploads'

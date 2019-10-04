@@ -18,13 +18,16 @@ def summary(fle, fleName, target):
 		to_check=row['TO_CHECK']
 	to_check=json.loads(to_check)
 	files=sorted(to_check['files'])
+	print('files---',files)
 	total_issues={}
 
 	sheet_columns=['File_name','Total_Issues']
+
 	for file in files:
+		print('file---------',file, total_issues)
 		total_issues[file]=0
 	newdf=pd.DataFrame(list(total_issues.items()),columns=sheet_columns)
-	print(newdf)
+	print('newdf---------------',newdf)
 
 	#wb=openpyxl.load_workbook(file)
 	wb=ExcelFile(target)
@@ -36,14 +39,19 @@ def summary(fle, fleName, target):
 		df = pd.read_excel(target, sheet_name=sheet)
 		#print(df.head())
 		file_cnt=df.groupby(by='FILE_NAME',as_index=False).agg({'ROW_NO': pd.Series.nunique})
-		print(file_cnt)
+		print('file_cnt---',file_cnt)
 		for index,row in file_cnt.iterrows():
 			file_name=row['FILE_NAME']
+			print('file_name---',file_name)
 			file_name=file_name[:file_name.find('.xlsx')]
+			print('file_name---',file_name)
 			i=newdf.index[newdf['File_name'] == file_name]
+			print('i----',i)
+			print('row[ROW_NO]----',row['ROW_NO'])
 			newdf.loc[i,sheet]=row['ROW_NO']
 			newdf.loc[i,'Total_Issues']+=row['ROW_NO']
-		print(newdf)
+
+	print('newdf---',newdf)
 		
 	with ExcelWriter(target,engine='openpyxl',mode='a') as writer:
 		newdf.to_excel(writer,sheet_name='Summary',index=False)
