@@ -69,9 +69,7 @@ def upload_file():
         uploaded_files = request.files.getlist("file")
         milliseconds = request.args.get("milliseconds")
         rules = request.args.get("rules")
-        print('rules--------',rules)
         rules = rules.split(',')
-        print('rules--------',rules)
         print(milliseconds)
         for file in uploaded_files:
             if file.filename == '':
