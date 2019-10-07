@@ -1,4 +1,4 @@
-def get_Json_data(target):
+def get_Json_data(target, length):
     import xlrd
     import os
     from collections import OrderedDict
@@ -8,7 +8,6 @@ def get_Json_data(target):
     import pandas as pd
 
     df = pd.read_excel(target, sheet_name="Summary")
-   
     json_data = df.to_json(orient='records')
     print('json_data---------------',json_data)
     os.remove(target)
