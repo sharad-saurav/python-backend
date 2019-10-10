@@ -62,7 +62,6 @@ def start_date_less_than_end_date(fle, fleName, target):
 			
 			if(pd.notnull(row['START_DATE']) and pd.notnull(row['END_DATE'])): 
 				if(validate_date(start_date) and validate_date(end_date)):		
-					print('startdate----------',start_date, end_date,start_date > end_date)			
 					if(start_date > end_date):
 						entry=[index,file,'START_DATE has start date greater than end date']
 						print('The row '+str(index)+' in the file '+file+' has start date greater than end date')

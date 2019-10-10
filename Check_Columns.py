@@ -9,7 +9,7 @@ def checkColumn(fle, fleName):
         "SUBJECT_AREA",
         "SAMPLE_QUESTION",
         "ENTITY_TYPE",
-        # "INTENT",
+        "INTENT",
         "COPIED_FROM",
         "ENTITY_NAME",
         "SECONDARY_ENTITY_NAME",

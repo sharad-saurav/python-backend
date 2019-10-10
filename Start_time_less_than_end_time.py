@@ -57,7 +57,6 @@ def start_time_less_than_end_time(fle, fleName, target):
 			end_time=row['END_TIME']
 			if(pd.notnull(row['START_TIME']) and pd.notnull(row['END_TIME'])):
 				if(validate_time(start_time) and validate_time(end_time)):
-					print('startdate----------',start_time, end_time, start_time>end_time)
 					if(start_time>end_time):
 						entry=[index,file,'START_TIME has start time greater than end time']
 						print('The row '+str(index)+' in the file '+file+' has start_time greater than end time')

@@ -1,4 +1,4 @@
-def summary(fle, fleName, target):
+def summary(target, numberOfFiles, rules):
 	import sys
 	import json
 	import openpyxl
@@ -18,40 +18,49 @@ def summary(fle, fleName, target):
 		to_check=row['TO_CHECK']
 	to_check=json.loads(to_check)
 	files=sorted(to_check['files'])
-	print('files---',files)
 	total_issues={}
+
+	flag = True
 
 	sheet_columns=['File_name','Total_Issues']
 
+
+
 	for file in files:
-		print('file---------',file, total_issues)
 		total_issues[file]=0
 	newdf=pd.DataFrame(list(total_issues.items()),columns=sheet_columns)
-	print('newdf---------------',newdf)
 
 	#wb=openpyxl.load_workbook(file)
 	wb=ExcelFile(target)
 	sheet_names=wb.sheet_names
-	print(sheet_names)
 
-	for sheet in sheet_names:
-		newdf[sheet]=0
-		df = pd.read_excel(target, sheet_name=sheet)
-		#print(df.head())
+	for r in rules:
+		array = []
+		if(r in sheet_names):
+			for i in range(numberOfFiles):
+				if(i != 0):
+					array.append(wb.parse(r + str(i)))
+				else:
+					array.append(wb.parse(r))
+			concat = pd.concat(array)
+			if(flag):
+				with ExcelWriter(target,engine='openpyxl',mode='w') as writer:
+					concat.to_excel(writer,sheet_name=r,index=False)
+					flag = False
+			else:
+				with ExcelWriter(target,engine='openpyxl',mode='a') as writer:
+					concat.to_excel(writer,sheet_name=r,index=False)
+
+	for r in rules:
+		newdf[r]=0
+		df = pd.read_excel(target, sheet_name=r)
 		file_cnt=df.groupby(by='FILE_NAME',as_index=False).agg({'ROW_NO': pd.Series.nunique})
-		print('file_cnt---',file_cnt)
 		for index,row in file_cnt.iterrows():
 			file_name=row['FILE_NAME']
-			print('file_name---',file_name)
 			file_name=file_name[:file_name.find('.xlsx')]
-			print('file_name---',file_name)
 			i=newdf.index[newdf['File_name'] == file_name]
-			print('i----',i)
-			print('row[ROW_NO]----',row['ROW_NO'])
-			newdf.loc[i,sheet]=row['ROW_NO']
+			newdf.loc[i,r]=row['ROW_NO']
 			newdf.loc[i,'Total_Issues']+=row['ROW_NO']
 
-	print('newdf---',newdf)
-		
 	with ExcelWriter(target,engine='openpyxl',mode='a') as writer:
 		newdf.to_excel(writer,sheet_name='Summary',index=False)

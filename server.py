@@ -47,13 +47,16 @@ import requests
 import urllib.request
 import traceback
 import Check_Columns
+import pandas as pd
+from pandas import ExcelWriter
+from pandas import ExcelFile
+import openpyxl
 
 app = Flask(__name__, static_url_path='')
 CORS(app)
 ALLOWED_EXTENSIONS = set([ 'xls', 'xlsx'])
 
-# On IBM Cloud Cloud Foundry, get the port number from the environment variable PORT
-# When running this app on the local machine, default the port to 8000
+
 port = int(os.getenv('PORT', 5002))
 
 def allowed_file(filename):
@@ -71,20 +74,23 @@ def upload_file():
         rules = request.args.get("rules")
         rules = rules.split(',')
         print(milliseconds)
+
+        link = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/DataFiles_Rules_Report.xlsx'
+        target, headers = urllib.request.urlretrieve(link)
+        print(target, headers)
+
+        newTar = target + ".xlsx"
+        os.rename(target, newTar)
+        length = len(rules)
+        numberOfFiles = len(uploaded_files)
+
         for file in uploaded_files:
             if file.filename == '':
                 flash('No selected file')
                 return redirect(request.url)
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                link = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/DataFiles_Rules_Report.xlsx'
-                target, headers = urllib.request.urlretrieve(link)
-                print(target, headers)
-
-                newTar = target + ".xlsx"
-                os.rename(target, newTar)
                 Check_Columns.checkColumn(file, filename) 
-                length = len(rules)
                 if("Allowed_intents_in_Unstructured" in rules):
                     Allowed_intents_in_Unstructured.rule_unstructured(file, filename, newTar)
                 if("Check_for_duplicates" in rules):
@@ -147,12 +153,39 @@ def upload_file():
                     Start_time_less_than_end_time.start_time_less_than_end_time(file, filename, newTar)
                 if("Time_in_HH_MM_SS_format" in rules):
                     Time_in_HH_MM_SS_format.time_in_hh_mm_ss_format(file, filename, newTar)
-                Summary.summary(file, filename, newTar)
+        Summary.summary(newTar, numberOfFiles, rules)
         uploadFile.multi_part_upload("sharad-saurav-bucket", "DataFiles_Rules_Report" + milliseconds + ".xlsx", newTar)
         return getJson.get_Json_data(newTar, length)
     except Exception as e:
         traceback.print_exc()
         return str(e)
 
+@app.route('/changeConfig', methods=['POST'])
+def changeConfig():
+    try:
+        print(request.data)
+        configArray = json.loads(request.data.decode("utf-8"))
+        configArray = configArray['configArray']
+        config_file = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/Configuration.xlsx'
+        target, headers = urllib.request.urlretrieve(config_file)
+        df=pd.read_excel(config_file)
+        for data in configArray:
+            for index,row in df.iterrows():
+                if(row['RULE'] == data['rule']):
+                    print('df before change---',df.at[index, 'TO_CHECK'])
+                    df.set_value(index, 'TO_CHECK','{"files_to_apply":' + str(data['filesToApply']) + ', "columns_to_apply":' + str(data["columnsToApply"]) + '}' ) 
+                    print('df after change---',df.at[index, 'TO_CHECK'])
+        with ExcelWriter(target,engine='openpyxl',mode='w') as writer:
+            df.to_excel(writer,sheet_name="Sheet1",index=False)
+        
+        uploadFile.multi_part_upload("sharad-saurav-bucket", "Configuration.xlsx", target)
+        return "Succesfull"
+    except Exception as e:
+        traceback.print_exc()
+        return str(e)
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=port, debug=True)
+    
+	
+    	
