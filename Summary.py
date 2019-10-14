@@ -53,6 +53,8 @@ def summary(target, numberOfFiles, rules):
 
 	for r in rules:
 		newdf[r]=0
+		print('r---',r)
+		print('target---',target)
 		df = pd.read_excel(target, sheet_name=r)
 		file_cnt=df.groupby(by='FILE_NAME',as_index=False).agg({'ROW_NO': pd.Series.nunique})
 		for index,row in file_cnt.iterrows():

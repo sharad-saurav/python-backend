@@ -172,8 +172,15 @@ def changeConfig():
         for data in configArray:
             for index,row in df.iterrows():
                 if(row['RULE'] == data['rule']):
-                    print('df before change---',df.at[index, 'TO_CHECK'])
-                    df.set_value(index, 'TO_CHECK','{"files_to_apply":' + str(data['filesToApply']) + ', "columns_to_apply":' + str(data["columnsToApply"]) + '}' ) 
+                    if(data['filesToApply'] == "ALL"):
+                        data["columnsToApply"] = json.dumps(data["columnsToApply"])
+                        data["filesToApply"] = json.dumps(data["filesToApply"])
+                        df.at[index, "TO_CHECK"] = "{" + '"files_to_apply"' + ":" + '"ALL"' + "," + '"columns_to_apply"' + ":" + str(data["columnsToApply"]) + "}"
+                    else:
+                        data["columnsToApply"] = json.dumps(data["columnsToApply"])
+                        data["filesToApply"] = json.dumps(data["filesToApply"])
+                        df.at[index, "TO_CHECK"] = "{" + '"files_to_apply"' + ":" + str(data["filesToApply"]) + "," + '"columns_to_apply"' + ":" + str(data["columnsToApply"]) + "}" 
+
                     print('df after change---',df.at[index, 'TO_CHECK'])
         with ExcelWriter(target,engine='openpyxl',mode='w') as writer:
             df.to_excel(writer,sheet_name="Sheet1",index=False)
