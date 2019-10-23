@@ -180,13 +180,22 @@ def changeConfig():
                         data["columnsToApply"] = json.dumps(data["columnsToApply"])
                         data["filesToApply"] = json.dumps(data["filesToApply"])
                         df.at[index, "TO_CHECK"] = "{" + '"files_to_apply"' + ":" + str(data["filesToApply"]) + "," + '"columns_to_apply"' + ":" + str(data["columnsToApply"]) + "}" 
-
-                    print('df after change---',df.at[index, 'TO_CHECK'])
         with ExcelWriter(target,engine='openpyxl',mode='w') as writer:
             df.to_excel(writer,sheet_name="Sheet1",index=False)
         
         uploadFile.multi_part_upload("sharad-saurav-bucket", "Configuration.xlsx", target)
         return "Succesfull"
+    except Exception as e:
+        traceback.print_exc()
+        return str(e)
+
+@app.route('/downloadConfig', methods=['GET'])
+def downloadConfig():
+    try:
+        config_file = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/Configuration.xlsx'
+        df = pd.read_excel(config_file, sheet_name="Sheet1")
+        json_data = df.to_json(orient='records')
+        return json_data
     except Exception as e:
         traceback.print_exc()
         return str(e)
