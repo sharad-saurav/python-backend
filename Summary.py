@@ -17,13 +17,17 @@ def summary(target, numberOfFiles, rules):
 	for index,row in dfObj.iterrows():
 		to_check=row['TO_CHECK']
 	to_check=json.loads(to_check)
-	files=sorted(to_check['files'])
+	
 	total_issues={}
 
 	flag = True
 
 	sheet_columns=['File_name','Total_Issues']
 
+	fileList = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/fileList.xlsx'
+	df2=pd.read_excel(fileList)
+	files = df2['FileName'].tolist()
+	print('files-----',files)
 
 
 	for file in files:
@@ -53,8 +57,6 @@ def summary(target, numberOfFiles, rules):
 
 	for r in rules:
 		newdf[r]=0
-		print('r---',r)
-		print('target---',target)
 		df = pd.read_excel(target, sheet_name=r)
 		file_cnt=df.groupby(by='FILE_NAME',as_index=False).agg({'ROW_NO': pd.Series.nunique})
 		for index,row in file_cnt.iterrows():
@@ -66,3 +68,7 @@ def summary(target, numberOfFiles, rules):
 
 	with ExcelWriter(target,engine='openpyxl',mode='a') as writer:
 		newdf.to_excel(writer,sheet_name='Summary',index=False)
+
+	
+    
+	

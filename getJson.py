@@ -9,6 +9,5 @@ def get_Json_data(target, length):
 
     df = pd.read_excel(target, sheet_name="Summary")
     json_data = df.to_json(orient='records')
-    print('json_data---------------',json_data)
     os.remove(target)
     return json_data

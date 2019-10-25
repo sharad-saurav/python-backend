@@ -1,3 +1,4 @@
+
 from cloudant import Cloudant
 from flask import Flask, render_template, request, jsonify, flash, redirect, url_for
 import os
@@ -73,8 +74,6 @@ def upload_file():
         milliseconds = request.args.get("milliseconds")
         rules = request.args.get("rules")
         rules = rules.split(',')
-        print(milliseconds)
-
         link = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/DataFiles_Rules_Report.xlsx'
         target, headers = urllib.request.urlretrieve(link)
         print(target, headers)
@@ -184,6 +183,7 @@ def changeConfig():
             df.to_excel(writer,sheet_name="Sheet1",index=False)
         
         uploadFile.multi_part_upload("sharad-saurav-bucket", "Configuration.xlsx", target)
+        os.remove(target)
         return "Succesfull"
     except Exception as e:
         traceback.print_exc()
@@ -200,8 +200,79 @@ def downloadConfig():
         traceback.print_exc()
         return str(e)
 
+@app.route('/uploadFileAndColumn', methods=['POST'])
+def uploadFileAndColumn():
+    try:
+        print(request.data)
+        fileName = json.loads(request.data.decode("utf-8"))['fileName']
+        columnNames = json.loads(request.data.decode("utf-8"))['columnNames']
+
+        checkColumn = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/checkColumn.xlsx'
+        target1, headers = urllib.request.urlretrieve(checkColumn)
+        df1=pd.read_excel(checkColumn)
+
+        fileList = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/fileList.xlsx'
+        target2, headers = urllib.request.urlretrieve(fileList)
+        df2=pd.read_excel(fileList)
+
+        columnList = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/columnList.xlsx'
+        target3, headers = urllib.request.urlretrieve(columnList)
+        df3=pd.read_excel(columnList)
+
+
+        if((df2['FileName'] != fileName).any()):
+           row = [fileName]
+           df2.loc[len(df2)] = row
+
+        for columnName in columnNames:
+            if((df3['ColumnName'] != columnName).any()):
+                row = [columnName]
+                df3.loc[len(df3)] = row
+        
+        if((df1['File'] == fileName).any()):
+            for index,row in df1.iterrows():
+                if(row['File'] == fileName):
+                    df1.at[index, "Columns"] = columnNames
+        else:
+            row = [fileName, columnNames]
+            df1.loc[len(df1)] = row
+
+        with ExcelWriter(target1,engine='openpyxl',mode='w') as writer:
+            df1.to_excel(writer,sheet_name="Sheet1",index=False)
+        
+        with ExcelWriter(target2,engine='openpyxl',mode='w') as writer:
+            df2.to_excel(writer,sheet_name="Sheet1",index=False)
+
+        with ExcelWriter(target3,engine='openpyxl',mode='w') as writer:
+            df3.to_excel(writer,sheet_name="Sheet1",index=False)
+
+        uploadFile.multi_part_upload("sharad-saurav-bucket", "checkColumn.xlsx", target1)
+        uploadFile.multi_part_upload("sharad-saurav-bucket", "fileList.xlsx", target2)
+        uploadFile.multi_part_upload("sharad-saurav-bucket", "columnList.xlsx", target3)
+
+        os.remove(target1)
+        os.remove(target2)
+        os.remove(target3)
+        return "Succesfull"
+    except Exception as e:
+        traceback.print_exc()
+        return str(e)
+
+@app.route('/downloadFileAndColumnNames', methods=['GET'])
+def downloadFileAndColumnNames():
+    try:
+        fileList = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/fileList.xlsx'
+        df2=pd.read_excel(fileList)
+
+        columnList = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/columnList.xlsx'
+        df3=pd.read_excel(columnList)
+
+        fileArray = df2.to_json(orient='values')
+        columnNames = df3.to_json(orient='values')
+        return {"fileArray": fileArray, "columnNames": columnNames}
+    except Exception as e:
+        traceback.print_exc()
+        return str(e)
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=port, debug=True)
-    
-	
-    	

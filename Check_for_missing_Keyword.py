@@ -46,7 +46,6 @@ def rule_missing_keyword(fle, fleName, target):
 	for file in files:
 		df = pd.read_excel(fle)
 		df.index = range(2,df.shape[0]+2)
-		print('df.index------------',df.index)
 		for index, row in df.iterrows():
 			if(pd.notnull(row['ENTITY_NAME']) & pd.notnull(row['SECONDARY_ENTITY_NAME'])):
 				if(pd.isnull(row['KEYWORD'])):
