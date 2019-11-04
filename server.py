@@ -1,3 +1,4 @@
+
 from cloudant import Cloudant
 from flask import Flask, render_template, request, jsonify, flash, redirect, url_for
 import os
@@ -275,6 +276,3 @@ def downloadFileAndColumnNames():
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=port, debug=True)
-    
-	
-    	
