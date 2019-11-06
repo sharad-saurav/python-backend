@@ -205,14 +205,26 @@ def uploadFileAndColumn():
     try:
         print(request.data)
         fileName = json.loads(request.data.decode("utf-8"))['fileName']
+        fileName = fileName + ".xlsx"
         columnNames = json.loads(request.data.decode("utf-8"))['columnNames']
-
+        columnName = ''
+        ctr = 0
+        for col in columnNames:
+            ctr = ctr + 1
+            if(ctr == len(columnNames)):
+                columnName  = columnName + '"'+ col +'"'
+            else:
+                columnName  = columnName + '"'+ col +'"' + ","
+            
         checkColumn = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/checkColumn.xlsx'
+        
         target1, headers = urllib.request.urlretrieve(checkColumn)
-        df1=pd.read_excel(checkColumn)
-
+        df1 = pd.read_excel(checkColumn)
+        
         fileList = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/fileList.xlsx'
+        
         target2, headers = urllib.request.urlretrieve(fileList)
+        
         df2=pd.read_excel(fileList)
 
         columnList = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/columnList.xlsx'
@@ -220,21 +232,21 @@ def uploadFileAndColumn():
         df3=pd.read_excel(columnList)
 
 
-        if((df2['FileName'] != fileName).any()):
+        if(fileName not in df2.values):
            row = [fileName]
            df2.loc[len(df2)] = row
 
-        for columnName in columnNames:
-            if((df3['ColumnName'] != columnName).any()):
-                row = [columnName]
+        for columnNam in columnNames:
+            if columnNam not in df3.values:
+                row = [columnNam]
                 df3.loc[len(df3)] = row
         
-        if((df1['File'] == fileName).any()):
+        if(fileName in df1.values):
             for index,row in df1.iterrows():
                 if(row['File'] == fileName):
-                    df1.at[index, "Columns"] = columnNames
+                    df1.at[index, "Columns"] = columnName
         else:
-            row = [fileName, columnNames]
+            row = [fileName, columnName]
             df1.loc[len(df1)] = row
 
         with ExcelWriter(target1,engine='openpyxl',mode='w') as writer:

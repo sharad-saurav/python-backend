@@ -7,11 +7,15 @@ def checkColumn(fle, fleName):
 
     checkColumnFile = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/checkColumn.xlsx'
     df=pd.read_excel(checkColumnFile)
+    print('df.File--------',df.File)
+    print('fleName--------',fleName)
     columnNames =  df.loc[df.File == fleName,'Columns'].tolist()
-    columnNames =  "[" + columnNames[0] +"]"
+    print('columnNames1------',columnNames)
+    columnNames =  "[" + columnNames[0] + "]"
+    print('columnNames2------',columnNames)
     columnNames = json.loads(columnNames)
-    print('columnNames----------',columnNames)
-    # print('columnNames-----',columnNames)
+    print('columnNames3----------',columnNames)
+    print('columnNames-----',columnNames)
     df = pd.read_excel(fle)
     print('df----',df)
     for col in columnNames:

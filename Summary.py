@@ -11,12 +11,12 @@ def summary(target, numberOfFiles, rules):
 
 	config_file= 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/Configuration.xlsx'
 	# target= 'C:/Users/105666/projects/pythonProject/angular-python-flask-demo/DataFiles_Rules_Report.xlsx'
-	config=pd.read_excel(config_file)
-	dfObj=config[config['RULE']=='Summary']
-	to_check=''
-	for index,row in dfObj.iterrows():
-		to_check=row['TO_CHECK']
-	to_check=json.loads(to_check)
+	# config=pd.read_excel(config_file)
+	# dfObj=config[config['RULE']=='Summary']
+	# to_check=''
+	# for index,row in dfObj.iterrows():
+	# 	to_check=row['TO_CHECK']
+	# to_check=json.loads(to_check)
 	
 	total_issues={}
 
@@ -28,7 +28,6 @@ def summary(target, numberOfFiles, rules):
 	df2=pd.read_excel(fileList)
 	files = df2['FileName'].tolist()
 	print('files-----',files)
-
 
 	for file in files:
 		total_issues[file]=0
@@ -60,10 +59,15 @@ def summary(target, numberOfFiles, rules):
 		df = pd.read_excel(target, sheet_name=r)
 		file_cnt=df.groupby(by='FILE_NAME',as_index=False).agg({'ROW_NO': pd.Series.nunique})
 		for index,row in file_cnt.iterrows():
+			print('row----------',row)
 			file_name=row['FILE_NAME']
-			file_name=file_name[:file_name.find('.xlsx')]
+			print('file_name--------',file_name)
+			# file_name=file_name[:file_name.find('.xlsx')]
+			# print('file_name-------------',file_name)
 			i=newdf.index[newdf['File_name'] == file_name]
+			print('i---------',i)
 			newdf.loc[i,r]=row['ROW_NO']
+			print('newdf--------',newdf)
 			newdf.loc[i,'Total_Issues']+=row['ROW_NO']
 
 	with ExcelWriter(target,engine='openpyxl',mode='a') as writer:
