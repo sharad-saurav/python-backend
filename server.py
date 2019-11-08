@@ -82,6 +82,9 @@ def upload_file():
         os.rename(target, newTar)
         length = len(rules)
         numberOfFiles = len(uploaded_files)
+        fileNames = []        
+        for file in uploaded_files:
+            fileNames.append(file.filename)
 
         for file in uploaded_files:
             if file.filename == '':
@@ -152,7 +155,7 @@ def upload_file():
                     Start_time_less_than_end_time.start_time_less_than_end_time(file, filename, newTar)
                 if("Time_in_HH_MM_SS_format" in rules):
                     Time_in_HH_MM_SS_format.time_in_hh_mm_ss_format(file, filename, newTar)
-        Summary.summary(newTar, numberOfFiles, rules)
+        Summary.summary(newTar, numberOfFiles, rules, fileNames)
         uploadFile.multi_part_upload("sharad-saurav-bucket", "DataFiles_Rules_Report" + milliseconds + ".xlsx", newTar)
         return getJson.get_Json_data(newTar, length)
     except Exception as e:
@@ -282,6 +285,30 @@ def downloadFileAndColumnNames():
         fileArray = df2.to_json(orient='values')
         columnNames = df3.to_json(orient='values')
         return {"fileArray": fileArray, "columnNames": columnNames}
+    except Exception as e:
+        traceback.print_exc()
+        return str(e)
+
+@app.route('/checkFile', methods=['GET'])
+def checkFile():
+    try:
+        fileName = request.args.get("fileName")
+        print('fileName--',fileName)
+        fileName = fileName + ".xlsx"
+        columns = []
+        checkColumn = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/checkColumn.xlsx'
+        df1 = pd.read_excel(checkColumn)
+        if(fileName in df1.values):
+            for index,row in df1.iterrows():
+                if(row['File'] == fileName):
+                    columns = row["Columns"]
+        print(columns)
+        columns = json.loads("[" + columns + "]")
+        print(columns)
+        array = []
+        for col in columns:
+            array.append({"name":col})
+        return jsonify(array)    
     except Exception as e:
         traceback.print_exc()
         return str(e)
