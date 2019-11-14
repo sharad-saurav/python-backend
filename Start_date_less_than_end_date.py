@@ -14,19 +14,10 @@ def start_date_less_than_end_date(fle, fleName, target):
 	from datetime import time
 	import datetime
 
-	file_name="Start_date_less_than_end_date.py"
 	configFile ='https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/Configuration.xlsx'
-	rule=file_name[:file_name.find('.py')]
-	# file_directory= 'C:/uploads'
-	
-	config_file=configFile
-	# target= 'C:/Users/105666/projects/pythonProject/angular-python-flask-demo/DataFiles_Rules_Report.xlsx'
-	fles = []
-	fles.append(fleName)
-	all_files= fles
-	files=[]
+	rule="Start_date_less_than_end_date"
 
-	config=pd.read_excel(config_file)
+	config=pd.read_excel(configFile)
 	newdf=config[config['RULE']==rule]
 	to_check=''
 	for index,row in newdf.iterrows():
@@ -35,24 +26,15 @@ def start_date_less_than_end_date(fle, fleName, target):
 	files_to_apply=to_check['files_to_apply']
 	columns_to_apply=to_check['columns_to_apply']
 
-	if(to_check['files_to_apply']=='ALL'):
-		files = all_files
-	else:
-		for f in files_to_apply:
-			for file in all_files:
-				if(file.startswith(f)):
-					files.append(file)
-
 	data=[]
+	if(files_to_apply=='ALL' or fleName in files_to_apply):
+		def validate_date(date_text):
+			try:
+				datetime.datetime.strptime(date_text, '%Y-%m-%d')
+				return True
+			except:
+				return False
 
-	def validate_date(date_text):
-		try:
-			datetime.datetime.strptime(date_text, '%Y-%m-%d')
-			return True
-		except:
-			return False
-
-	for file in files:
 		df = pd.read_excel(fle)
 		df.index = range(2,df.shape[0]+2)
 
@@ -63,10 +45,14 @@ def start_date_less_than_end_date(fle, fleName, target):
 			if(pd.notnull(row['START_DATE']) and pd.notnull(row['END_DATE'])): 
 				if(validate_date(start_date) and validate_date(end_date)):		
 					if(start_date > end_date):
-						entry=[index,file,'START_DATE has start date greater than end date']
-						print('The row '+str(index)+' in the file '+file+' has start date greater than end date')
+						entry=[index,fleName,'START_DATE has start date greater than end date']
+						print('The row '+str(index)+' in the file '+fleName+' has start date greater than end date')
 						data.append(entry)
 				
-	df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
-	with ExcelWriter(target,engine='openpyxl',mode='a') as writer:
-		df1.to_excel(writer,sheet_name=rule,index=False)
+		df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
+		if(ExcelFile(target).sheet_names[0] == 'Sheet1'):
+			with ExcelWriter(target, engine='openpyxl', mode='w') as writer:
+				df1.to_excel(writer,sheet_name=rule,index=False)
+		else:
+			with ExcelWriter(target, engine='openpyxl', mode='a') as writer:
+				df1.to_excel(writer,sheet_name=rule,index=False)

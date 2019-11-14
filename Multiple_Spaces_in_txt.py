@@ -9,19 +9,10 @@ def multiple_spaces_in_txt(fle, fleName, target):
 	from pandas import ExcelWriter
 	from pandas import ExcelFile
 
-	file_name="Multiple_Spaces_in_txt.py"
 	configFile = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/Configuration.xlsx'
-	rule=file_name[:file_name.find('.py')]
-	# file_directory= 'C:/uploads'
+	rule="Multiple_Spaces_in_txt"
 	
-	config_file=configFile
-	# target= 'C:/Users/105666/projects/pythonProject/angular-python-flask-demo/DataFiles_Rules_Report.xlsx'
-	fles = []
-	fles.append(fleName)
-	all_files= fles
-	files=[]
-
-	config=pd.read_excel(config_file)
+	config=pd.read_excel(configFile)
 	newdf=config[config['RULE']==rule]
 	to_check=''
 	for index,row in newdf.iterrows():
@@ -29,25 +20,16 @@ def multiple_spaces_in_txt(fle, fleName, target):
 	to_check=json.loads(to_check)
 	files_to_apply=to_check['files_to_apply']
 	columns_to_apply=to_check['columns_to_apply']
+	if(files_to_apply=='ALL' or fleName in  files_to_apply):
+		data=[]
+		regex = r"\s{2,}"
 
-	if(to_check['files_to_apply']=='ALL'):
-		files = all_files
-	else:
-		for f in files_to_apply:
-			for file in all_files:
-				if(file.startswith(f)):
-					files.append(file)
+		def check_multiple_space(string):   
+			if(re.search(regex,string)): 
+				return True
+			else:  
+				return False
 
-	data=[]
-	regex = r"\s{2,}"
-
-	def check_multiple_space(string):   
-		if(re.search(regex,string)): 
-			return True
-		else:  
-			return False
-
-	for file in files:
 		df = pd.read_excel(fle)
 		df.index = range(2,df.shape[0]+2)
 
@@ -56,10 +38,14 @@ def multiple_spaces_in_txt(fle, fleName, target):
 				column_value=row[column_name]
 				if(pd.notnull(row[column_name])):
 					if(check_multiple_space(column_value)):
-						entry=[index,file,column_name+' has multiple spaces in its contents']
-						print('The row '+str(index)+' in the file '+file+' has multiple spaces in '+column_name+' column')
+						entry=[index,fleName,column_name+' has multiple spaces in its contents']
+						print('The row '+str(index)+' in the file '+fleName+' has multiple spaces in '+column_name+' column')
 						data.append(entry)
-					
-	df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
-	with ExcelWriter(target,engine='openpyxl',mode='a') as writer:
-		df1.to_excel(writer,sheet_name=rule,index=False)
+						
+		df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
+		if(ExcelFile(target).sheet_names[0] == 'Sheet1'):
+			with ExcelWriter(target, engine='openpyxl', mode='w') as writer:
+				df1.to_excel(writer,sheet_name=rule,index=False)
+		else:
+			with ExcelWriter(target, engine='openpyxl', mode='a') as writer:
+				df1.to_excel(writer,sheet_name=rule,index=False)

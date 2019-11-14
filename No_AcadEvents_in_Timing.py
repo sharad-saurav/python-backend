@@ -11,19 +11,9 @@ def no_acadEvents_in_timing(fle, fleName, target):
 	import validators
 	
 	configFile = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/Configuration.xlsx'
-	file_name='No_AcadEvents_in_Timing.py'
-	rule=file_name[:file_name.find('.py')]
-	# file_directory= 'C:/uploads'
+	rule="No_AcadEvents_in_Timing"
 	
-	config_file=configFile
-	# target= 'C:/Users/105666/projects/pythonProject/angular-python-flask-demo/DataFiles_Rules_Report.xlsx'
-
-	fles = []
-	fles.append(fleName)
-	all_files= fles
-	files=[]
-	
-	config=pd.read_excel(config_file)
+	config=pd.read_excel(configFile)
 	newdf=config[config['RULE']==rule]
 	to_check=''
 	for index,row in newdf.iterrows():
@@ -31,18 +21,8 @@ def no_acadEvents_in_timing(fle, fleName, target):
 	to_check=json.loads(to_check)
 	files_to_apply=to_check['files_to_apply']
 	columns_to_apply=to_check['columns_to_apply']
-
-	if(to_check['files_to_apply']=='ALL'):
-		files = all_files
-	else:
-		for f in files_to_apply:
-			for file in all_files:
-				if(file.startswith(f)):
-					files.append(file)
-
-	data=[]
-
-	for file in files:
+	if(files_to_apply=='ALL' or fleName in files_to_apply):
+		data=[]
 		df = pd.read_excel(fle)
 		df.index = range(2,df.shape[0]+2)
 
@@ -50,10 +30,14 @@ def no_acadEvents_in_timing(fle, fleName, target):
 			column_value=row['ENTITY_TYPE']
 			if(pd.notnull(row['ENTITY_TYPE'])):
 				if(column_value=='AcadEvents'):
-					entry=[index,file,'ENTITY_TYPE has entity of type AcadEvents which is not allowed entity type in timing file']
-					print('The row '+str(index)+' in the file '+file+' is of type AcadEvents which is not allowed')
+					entry=[index,fleName,'ENTITY_TYPE has entity of type AcadEvents which is not allowed entity type in timing file']
+					print('The row '+str(index)+' in the file '+fleName+' is of type AcadEvents which is not allowed')
 					data.append(entry)
 
-	df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
-	with ExcelWriter(target, engine='openpyxl',mode='a') as writer:
-		df1.to_excel(writer,sheet_name=rule,index=False)
+		df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
+		if(ExcelFile(target).sheet_names[0] == 'Sheet1'):
+			with ExcelWriter(target, engine='openpyxl', mode='w') as writer:
+				df1.to_excel(writer,sheet_name=rule,index=False)
+		else:
+			with ExcelWriter(target, engine='openpyxl', mode='a') as writer:
+				df1.to_excel(writer,sheet_name=rule,index=False)

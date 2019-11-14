@@ -296,18 +296,18 @@ def checkFile():
         print('fileName--',fileName)
         fileName = fileName + ".xlsx"
         columns = []
+        array = []
         checkColumn = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/checkColumn.xlsx'
         df1 = pd.read_excel(checkColumn)
         if(fileName in df1.values):
             for index,row in df1.iterrows():
                 if(row['File'] == fileName):
                     columns = row["Columns"]
-        print(columns)
-        columns = json.loads("[" + columns + "]")
-        print(columns)
-        array = []
-        for col in columns:
-            array.append({"name":col})
+            print(columns)
+            columns = json.loads("[" + columns + "]")
+            print(columns)
+            for col in columns:
+                array.append({"name":col})
         return jsonify(array)    
     except Exception as e:
         traceback.print_exc()

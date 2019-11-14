@@ -15,20 +15,10 @@ def time_in_hh_mm_ss_format(fle, fleName, target):
 	import validators
 	import time
 
-	file_name="Time_in_HH_MM_SS_format.py"
 	configFile = 'https://s3.us-east.cloud-object-storage.appdomain.cloud/sharad-saurav-bucket/Configuration.xlsx'
-	rule=file_name[:file_name.find('.py')]
-	# file_directory= 'C:/uploads'
-	
-	config_file=configFile
-	# target= 'C:/Users/105666/projects/pythonProject/angular-python-flask-demo/DataFiles_Rules_Report.xlsx'
-	fles = []
-	fles.append(fleName)
-	all_files= fles
-	files=[]
+	rule="Time_in_HH_MM_SS_format"
 
-
-	config=pd.read_excel(config_file)
+	config=pd.read_excel(configFile)
 	newdf=config[config['RULE']==rule]
 	to_check=''
 	for index,row in newdf.iterrows():
@@ -36,24 +26,16 @@ def time_in_hh_mm_ss_format(fle, fleName, target):
 	to_check=json.loads(to_check)
 	files_to_apply=to_check['files_to_apply']
 	columns_to_apply=to_check['columns_to_apply']
+	
+	if(files_to_apply=='ALL' or fleName in files_to_apply):
+		data=[]
 
-	if(to_check['files_to_apply']=='ALL'):
-		files = all_files
-	else:
-		for f in files_to_apply:
-			for file in all_files:
-				if(file.startswith(f)):
-					files.append(file)
+		def validate_time(time_text):
+			if(re.match("(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)",time_text)):
+				return False
+			else:
+				return True
 
-	data=[]
-
-	def validate_time(time_text):
-		if(re.match("(?:[01]\d|2[0123]):(?:[012345]\d):(?:[012345]\d)",time_text)):
-			return False
-		else:
-			return True
-
-	for file in files:
 		df = pd.read_excel(fle)
 		df.index = range(2,df.shape[0]+2)
 		
@@ -62,14 +44,18 @@ def time_in_hh_mm_ss_format(fle, fleName, target):
 			end_time=row['END_TIME']
 			if(pd.notnull(row['START_TIME']) and pd.notnull(row['END_TIME'])):
 				if (validate_time(start_time)):
-					entry=[index,file,'column START_TIME ' + start_time + ' does not have time in HH:MM:SS format']
-					print('The row '+str(index)+' in the file '+file+' does not have start time in HH:MM:SS format')
+					entry=[index,fleName,'column START_TIME ' + start_time + ' does not have time in HH:MM:SS format']
+					print('The row '+str(index)+' in the file '+fleName+' does not have start time in HH:MM:SS format')
 					data.append(entry)
 				if (validate_time(end_time)):
-					entry=[index,file,'column END_TIME '+ end_time+' does not have time in HH:MM:SS format']
-					print('The row '+str(index)+' in the file '+file+' does not have end time in HH:MM:SS format')
+					entry=[index,fleName,'column END_TIME '+ end_time+' does not have time in HH:MM:SS format']
+					print('The row '+str(index)+' in the file '+fleName+' does not have end time in HH:MM:SS format')
 					data.append(entry)
 					
-	df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
-	with ExcelWriter(target,engine='openpyxl',mode='a') as writer:
-		df1.to_excel(writer,sheet_name=rule,index=False)
+		df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
+		if(ExcelFile(target).sheet_names[0] == 'Sheet1'):
+			with ExcelWriter(target, engine='openpyxl', mode='w') as writer:
+				df1.to_excel(writer,sheet_name=rule,index=False)
+		else:
+			with ExcelWriter(target, engine='openpyxl', mode='a') as writer:
+				df1.to_excel(writer,sheet_name=rule,index=False)
