@@ -20,7 +20,6 @@ def rule_capitalization(fle, fleName, target):
 	
 	files_to_apply=to_check['files_to_apply']
 	columns_to_apply=to_check['columns_to_apply']
-	print('true test-----------------------------------',files_to_apply=='ALL' ,  fleName + ".xlsx" in  files_to_apply, files_to_apply=='ALL' or fleName + ".xlsx" in  files_to_apply)
 	if(files_to_apply=='ALL' or fleName in  files_to_apply):
 		data=[]
 
@@ -38,10 +37,8 @@ def rule_capitalization(fle, fleName, target):
 								
 		df1 = pd.DataFrame(data, columns = ['ROW_NO', 'FILE_NAME', 'COMMENTS'])
 		if(ExcelFile(target).sheet_names[0] == 'Sheet1'):
-			print('----------------check for cap-----------------')
 			with ExcelWriter(target, engine='openpyxl', mode='w') as writer:
 				df1.to_excel(writer,sheet_name=rule,index=False)
 		else:
-			print('----------------check for cap else-----------------')
 			with ExcelWriter(target, engine='openpyxl', mode='a') as writer:
 				df1.to_excel(writer,sheet_name=rule,index=False)
